@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Area, Property } from '../types';
+import { Area, Property, PropertyType } from '../types';
 import { fetchProperties } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
-import { IconCheck, IconShieldCheck, IconTrophy, IconBriefcase } from '../components/Icons';
+import { IconCheck, IconShieldCheck, IconTrophy, IconBriefcase, IconSearch, IconFilter, IconX } from '../components/Icons';
 import { StarRating } from '../components/StarRating';
 import { Link, navigate } from '../components/Link';
 import { SEO } from '../components/SEO';
@@ -10,6 +10,13 @@ import { SEO } from '../components/SEO';
 const Home: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Filter State
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [selectedType, setSelectedType] = useState<string>("");
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
 
   useEffect(() => {
     fetchProperties()
@@ -21,6 +28,38 @@ const Home: React.FC = () => {
   const handleAreaClick = (area: string) => {
     navigate(`/area/${encodeURIComponent(area)}`);
   };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedArea("");
+    setSelectedType("");
+    setMinPrice("");
+    setMaxPrice("");
+  };
+
+  // Filter Logic
+  const filteredProperties = properties.filter(property => {
+    // Search Term (Title or Description)
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const match = property.title.toLowerCase().includes(term) || 
+                    property.description.toLowerCase().includes(term);
+      if (!match) return false;
+    }
+
+    // Area
+    if (selectedArea && property.area !== selectedArea) return false;
+
+    // Property Type
+    if (selectedType && property.propertyType !== selectedType) return false;
+
+    // Price Range
+    const price = Number(property.price);
+    if (minPrice && price < Number(minPrice)) return false;
+    if (maxPrice && price > Number(maxPrice)) return false;
+
+    return true;
+  });
 
   const schema = {
     "@context": "https://schema.org",
@@ -45,7 +84,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="pb-12">
+    <div className="pb-12 bg-white">
       <SEO 
         title="Rajendranagar.online | Real Estate in Kismatpur, Budvel & Attapur"
         description="Buy verified properties in Rajendra Nagar, Kismatpur, Budvel & Attapur. Zero brokerage on villas, open plots and apartments. Trusted by 500+ clients."
@@ -53,7 +92,7 @@ const Home: React.FC = () => {
       />
 
       {/* Hero Section */}
-      <div className="bg-slate-900 text-white py-12 px-4">
+      <div className="bg-slate-900 text-white pt-16 pb-24 px-4">
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
             ZERO BROKERAGE PLATFORM
@@ -70,6 +109,93 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Search & Filter Section - Moved Here for Best Fit & Removed Sticky */}
+      <section className="px-4 -mt-12 relative z-10 mb-8" id="search">
+        <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4 text-slate-800 font-bold border-b border-gray-100 pb-2">
+            <IconSearch className="w-5 h-5 text-blue-600" />
+            <h2>Find Your Property</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            {/* Search Bar */}
+            <div className="md:col-span-4 relative">
+              <IconSearch className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search by title, keywords..." 
+                className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Area Select */}
+            <div className="md:col-span-2">
+              <select 
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                value={selectedArea}
+                onChange={(e) => setSelectedArea(e.target.value)}
+              >
+                <option value="">All Areas</option>
+                {Object.values(Area).map(a => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Type Select */}
+            <div className="md:col-span-2">
+              <select 
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                <option value="">All Types</option>
+                {Object.values(PropertyType).map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Price Range */}
+            <div className="md:col-span-2">
+              <input 
+                type="number" 
+                placeholder="Min Price" 
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
+            </div>
+            <div className="md:col-span-2 flex gap-2">
+               <input 
+                type="number" 
+                placeholder="Max Price" 
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
+              {(searchTerm || selectedArea || selectedType || minPrice || maxPrice) && (
+                <button 
+                  onClick={clearFilters}
+                  className="p-2.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex-shrink-0"
+                  title="Clear Filters"
+                >
+                  <IconX className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {(filteredProperties.length !== properties.length) && (
+            <div className="mt-3 text-xs text-gray-500 font-medium">
+              Showing {filteredProperties.length} results
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Trust & Stats Section */}
       <section className="bg-white border-b border-gray-100 py-10">
@@ -163,11 +289,15 @@ const Home: React.FC = () => {
           
           {loading ? (
             <div className="text-center py-12 text-gray-400">Loading properties...</div>
-          ) : properties.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">No properties listed yet.</div>
+          ) : filteredProperties.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
+              <IconFilter className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg mb-2">No properties match your search.</p>
+              <button onClick={clearFilters} className="text-blue-600 font-medium hover:underline">Clear all filters</button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {properties.map(property => (
+              {filteredProperties.map(property => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>

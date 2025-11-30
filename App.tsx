@@ -9,6 +9,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
 import Sitemap from './pages/Sitemap';
+import { Area } from './types';
 
 const App: React.FC = () => {
   const [path, setPath] = useState(window.location.pathname);
@@ -49,8 +50,8 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-gray-50 text-slate-800 font-sans">
         <nav className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50">
           <div className="max-w-5xl mx-auto flex justify-between items-center">
-            <Link href="/" className="font-bold text-lg tracking-tight hover:text-blue-600 transition-colors">
-              rajendranagar.online
+            <Link href="/" className="font-bold text-lg tracking-tight hover:text-blue-600 transition-colors font-sans">
+              Rajendranagar Online
             </Link>
             <div className="text-sm text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded">Admin Portal</div>
           </div>
@@ -67,20 +68,20 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans flex flex-col">
       {/* Public Navbar */}
-      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto flex justify-between items-center">
-          <Link href="/" className="font-extrabold text-xl tracking-tight text-slate-900">
-            rajendranagar.online
+      <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-4 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <Link href="/" className="font-bold text-2xl tracking-tight text-slate-900 font-sans">
+            Rajendranagar Online
           </Link>
           
           <a 
             href="https://wa.me/916281256601"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-green-100 transition-colors"
+            className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-green-100 transition-colors"
           >
             <IconWhatsApp className="w-4 h-4" />
-            <span className="hidden sm:inline">Contact Agent</span>
+            <span className="hidden sm:inline">Contact</span>
           </a>
         </div>
       </nav>
@@ -89,24 +90,35 @@ const App: React.FC = () => {
         {Component}
       </main>
       
-      <footer className="bg-slate-900 text-slate-300 py-12 text-sm border-t border-slate-800 mt-auto">
-        <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+      <footer className="bg-slate-900 text-slate-300 py-16 text-sm border-t border-slate-800 mt-auto">
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
           
           {/* Column 1: About */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">About rajendranagar.online</h3>
+            <h3 className="text-white font-bold text-lg mb-4">About Rajendranagar Online</h3>
             <p className="text-slate-400 leading-relaxed mb-4 text-sm">
               The most trusted real estate platform for Rajendra Nagar. We list only <strong>verified properties</strong> with no public posting allowed, ensuring quality and safety.
             </p>
             <p className="text-slate-400 text-sm mb-4">
               <strong>No Brokerage:</strong> We charge a small listing fee, not a commission. We stand against fake listings and unnecessary brokerage fees.
             </p>
-            <p className="text-slate-400 text-sm">
-              <strong>Trusted by:</strong> Google, Microsoft, & Govt Employees.
-            </p>
           </div>
 
-          {/* Column 2: Quick Links */}
+          {/* Column 2: Service Areas (New) */}
+          <div>
+            <h4 className="text-white font-semibold mb-4 text-base">Our Service Areas</h4>
+            <ul className="grid grid-cols-1 gap-1.5 text-slate-400">
+              {Object.values(Area).map((area) => (
+                <li key={area}>
+                  <Link href={`/area/${encodeURIComponent(area)}`} className="hover:text-white transition-colors text-sm">
+                    {area}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Quick Links */}
           <div>
             <h4 className="text-white font-semibold mb-4 text-base">Quick Links</h4>
             <ul className="space-y-3">
@@ -118,7 +130,7 @@ const App: React.FC = () => {
             </ul>
           </div>
 
-          {/* Column 3: Contact */}
+          {/* Column 4: Contact */}
           <div>
              <h4 className="text-white font-semibold mb-4 text-base">Get in Touch</h4>
              <p className="mb-2 text-slate-400">Call or WhatsApp us for listing or buying:</p>
@@ -133,14 +145,14 @@ const App: React.FC = () => {
                </a>
              </div>
              
-             <p className="mt-6 text-xs text-slate-500">
+             <p className="mt-8 text-xs text-slate-500">
                Property Owner? <Link href="/admin" className="underline hover:text-slate-300">Admin Login</Link>
              </p>
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 text-center text-slate-600 text-xs flex flex-col md:flex-row justify-between items-center gap-2">
-          <span>&copy; {new Date().getFullYear()} Rajendra Nagar Realty. All rights reserved.</span>
+        <div className="max-w-6xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 text-center text-slate-600 text-xs flex flex-col md:flex-row justify-between items-center gap-2">
+          <span>&copy; {new Date().getFullYear()} Rajendranagar Online. All rights reserved.</span>
           <span>Designed for speed and simplicity.</span>
         </div>
       </footer>

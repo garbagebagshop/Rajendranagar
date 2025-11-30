@@ -14,7 +14,9 @@ import {
   IconRuler, 
   IconCompass, 
   IconCheck,
-  IconShieldCheck
+  IconShieldCheck,
+  IconShare,
+  IconCopy
 } from '../components/Icons';
 
 interface Props {
@@ -24,6 +26,7 @@ interface Props {
 const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetchPropertyById(propertyId)
@@ -35,7 +38,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
   if (loading) return <div className="p-12 text-center text-gray-500">Loading Details...</div>;
   if (!property) return <div className="p-12 text-center text-red-500">Property not found.</div>;
 
-  const contactName = property.contact?.type === ContactType.Custom ? property.contact.name : "Agent";
+  const contactName = property.contact?.type === ContactType.Custom ? property.contact.name : "Team";
   const contactPhone = property.contact?.type === ContactType.Custom ? property.contact.phone : "6281256601";
   const contactWhatsapp = property.contact?.type === ContactType.Custom ? property.contact.whatsapp : "6281256601";
 
@@ -69,6 +72,40 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
       "availability": "https://schema.org/InStock"
     }
   };
+
+  // Helper to format price for simple text share
+  const formatPrice = (num: number) => {
+    if (num >= 10000000) return `₹${(num / 10000000).toFixed(2)} Cr`;
+    if (num >= 100000) return `₹${(num / 100000).toFixed(2)} Lakhs`;
+    return `₹${num}`;
+  };
+
+  const shareText = `Check out this property on Rajendranagar.online:\n\n${property.title}\n📍 ${property.area}\n💰 Price: ${formatPrice(property.price)}\n\nView details here: ${window.location.href}`;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: property.title,
+          text: shareText,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.error('Share failed:', err);
+      }
+    } else {
+      // Fallback to copy link
+      handleCopyLink();
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 md:py-10">
@@ -220,8 +257,10 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
           )}
         </div>
 
-        {/* Right Column: Contact */}
-        <div className="lg:col-span-1">
+        {/* Right Column: Contact & Share */}
+        <div className="lg:col-span-1 space-y-6">
+          
+          {/* Contact Card */}
           <div className="sticky top-24 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <h3 className="text-lg font-bold text-slate-900 mb-2">Interested?</h3>
             <p className="text-slate-500 text-sm mb-6">
@@ -234,7 +273,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
                 className="flex items-center justify-center gap-2 w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-colors"
               >
                 <IconPhone />
-                <span>Call Agent</span>
+                <span>Call Now</span>
               </a>
               <a 
                 href={`https://wa.me/91${contactWhatsapp}`}
@@ -247,6 +286,44 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
               </a>
             </div>
           </div>
+
+          {/* Share Card */}
+          <div className="sticky top-[380px] bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">Share this Property</h3>
+            <div className="flex flex-col gap-3">
+              <a 
+                href={whatsappShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full bg-green-50 text-green-700 border border-green-200 py-2.5 rounded-lg font-semibold hover:bg-green-100 transition-colors text-sm"
+              >
+                <IconWhatsApp className="w-4 h-4" />
+                <span>Share on WhatsApp</span>
+              </a>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button 
+                  onClick={handleShare}
+                  className="flex items-center justify-center gap-2 bg-gray-50 text-slate-700 border border-gray-200 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm"
+                >
+                  <IconShare className="w-4 h-4" />
+                  <span>Share</span>
+                </button>
+                <button 
+                  onClick={handleCopyLink}
+                  className={`flex items-center justify-center gap-2 border py-2.5 rounded-lg font-semibold transition-colors text-sm ${
+                    copied 
+                      ? "bg-blue-50 text-blue-700 border-blue-200" 
+                      : "bg-gray-50 text-slate-700 border-gray-200 hover:bg-gray-100"
+                  }`}
+                >
+                  {copied ? <IconCheck className="w-4 h-4" /> : <IconCopy className="w-4 h-4" />}
+                  <span>{copied ? "Copied!" : "Copy Link"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>

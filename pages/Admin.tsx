@@ -328,7 +328,7 @@ const Admin: React.FC = () => {
                 checked={formData.contact.type === ContactType.Custom}
                 onChange={() => setFormData(prev => ({ ...prev, contact: { ...prev.contact, type: ContactType.Custom } }))}
               />
-              <span>Custom Agent/Owner</span>
+              <span>Custom Contact</span>
             </label>
           </div>
 
