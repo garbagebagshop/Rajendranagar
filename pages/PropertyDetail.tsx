@@ -5,6 +5,8 @@ import { PriceFormatter } from '../components/PriceFormatter';
 import { StarRating } from '../components/StarRating';
 import { Link } from '../components/Link';
 import { SEO } from '../components/SEO';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
 import { 
   IconArrowLeft, 
   IconMapPin, 
@@ -155,26 +157,30 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
         </div>
       </div>
 
-      {/* Gallery - Loaded from images (mapped from img1...img4) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8 rounded-xl overflow-hidden shadow-sm h-96 md:h-[500px]">
-        <div className="h-full bg-gray-100">
+      {/* Gallery - Swiper Carousel */}
+      <div className="mb-8 h-72 md:h-[500px] rounded-xl overflow-hidden shadow-sm bg-gray-100">
+        {images.length <= 1 ? (
           <img 
             src={images[0] || 'https://via.placeholder.com/800x600?text=No+Image'} 
             alt="Main view" 
             className="w-full h-full object-cover"
           />
-        </div>
-        <div className="grid grid-cols-2 grid-rows-2 gap-2 h-full hidden md:grid">
-          {[1, 2, 3, 4].map((idx) => {
-             const imgUrl = images[idx] || null;
-             if (!imgUrl) return <div key={idx} className="bg-gray-50"></div>;
-             return (
-               <div key={idx} className="bg-gray-100 relative">
-                  <img src={imgUrl} alt={`View ${idx}`} className="w-full h-full object-cover" />
-               </div>
-             );
-          })}
-        </div>
+        ) : (
+          <Swiper
+            modules={[Navigation, Pagination]}
+            spaceBetween={10}
+            pagination={{ clickable: true }}
+            navigation
+            loop
+            className="h-full w-full"
+          >
+            {images.map((src, i) => (
+              <SwiperSlide key={i}>
+                <img src={src} className="w-full h-full object-cover" alt={`Slide ${i}`} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
