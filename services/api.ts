@@ -1,7 +1,7 @@
 import { PropertyData, Property, Area, PropertyType, SizeUnit, ContactType } from '../types';
 
 // New Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_7bgSODR4868R9hXeGoHWDUsBT8dDmSmrhB-nWU82C2QwQzPhL7F7ZDmmCEKzBx1tdw/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCTerlbp2GptHB7lhxXm7x2JLFaXkjrTXqMfskrA3Em_TqpBhyWhjE_n34EaaEJHRrkQ/exec";
 
 console.log(`API Service initialized. Backend: Google Sheets.`);
 
