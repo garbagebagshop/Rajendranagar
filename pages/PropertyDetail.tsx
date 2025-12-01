@@ -38,15 +38,26 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
   if (loading) return <div className="p-12 text-center text-gray-500">Loading Details...</div>;
   if (!property) return <div className="p-12 text-center text-red-500">Property not found.</div>;
 
+  // Determine Contact Details
   const contactName = property.contact?.type === ContactType.Custom ? property.contact.name : "Team";
   const contactPhone = property.contact?.type === ContactType.Custom ? property.contact.phone : "6281256601";
   const contactWhatsapp = property.contact?.type === ContactType.Custom ? property.contact.whatsapp : "6281256601";
 
-  // Safely access images
+  // Images: API Adapter maps img1..4 to property.media.images
   const images = property.media?.images || [];
   
-  // Safely access amenities
-  const amenitiesList = Array.isArray(property.amenities) ? property.amenities : [];
+  // Amenities: API Adapter parses JSON if needed, but we add a safety check
+  let amenitiesList: string[] = [];
+  if (Array.isArray(property.amenities)) {
+    amenitiesList = property.amenities;
+  } else if (typeof property.amenities === 'string') {
+    // Double fallback in case Adapter missed it
+    try {
+      amenitiesList = JSON.parse(property.amenities);
+    } catch(e) {
+      amenitiesList = [];
+    }
+  }
 
   const getYouTubeId = (url: string) => {
     if (!url) return null;
@@ -94,7 +105,6 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
         console.error('Share failed:', err);
       }
     } else {
-      // Fallback to copy link
       handleCopyLink();
     }
   };
@@ -145,7 +155,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
         </div>
       </div>
 
-      {/* Gallery */}
+      {/* Gallery - Loaded from images (mapped from img1...img4) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-8 rounded-xl overflow-hidden shadow-sm h-96 md:h-[500px]">
         <div className="h-full bg-gray-100">
           <img 
