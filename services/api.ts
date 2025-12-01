@@ -1,7 +1,7 @@
 import { PropertyData, Property } from '../types';
 
 // Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmGosrSjsuns3LkVQ_Zds56w2VllQoHl-SHTX5lgRrX58bVITonmK_Lvh4OH06FMfrUQ/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSVnGX1dmmR8rzbYGLaGqVFXqR2-5cCKr1t4ZhnhRpXdDyKi58NHleqpuuPjA-VuDHHA/exec";
 
 console.log(`API Service initialized. Using Google Sheets Backend.`);
 
