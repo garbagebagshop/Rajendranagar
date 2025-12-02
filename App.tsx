@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, Suspense } from 'react';
 import { IconWhatsApp, IconPhone } from './components/Icons';
 import { Link } from './components/Link';
-import Admin from './pages/Admin';
-import Home from './pages/Home';
-import AreaPage from './pages/AreaPage';
-import PropertyDetail from './pages/PropertyDetail';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import Terms from './pages/Terms';
-import Contact from './pages/Contact';
-import Sitemap from './pages/Sitemap';
 import { Area } from './types';
+
+// Lazy load pages for performance
+const Home = React.lazy(() => import('./pages/Home'));
+const Admin = React.lazy(() => import('./pages/Admin'));
+const AreaPage = React.lazy(() => import('./pages/AreaPage'));
+const PropertyDetail = React.lazy(() => import('./pages/PropertyDetail'));
+const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
+const Terms = React.lazy(() => import('./pages/Terms'));
+const Contact = React.lazy(() => import('./pages/Contact'));
+const Sitemap = React.lazy(() => import('./pages/Sitemap'));
+const RajendraNagarInfo = React.lazy(() => import('./pages/RajendraNagarInfo'));
 
 const App: React.FC = () => {
   const [path, setPath] = useState(window.location.pathname);
@@ -41,6 +45,8 @@ const App: React.FC = () => {
     Component = <Contact />;
   } else if (path === '/sitemap') {
     Component = <Sitemap />;
+  } else if (path === '/rajendra-nagar-info') {
+    Component = <RajendraNagarInfo />;
   } else {
     // Default to Home if root or unknown
     Component = <Home />;
@@ -50,18 +56,20 @@ const App: React.FC = () => {
   if (path === '/admin') {
     return (
       <div className="min-h-screen bg-gray-50 text-slate-800 font-sans">
-        <nav className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50">
-          <div className="max-w-5xl mx-auto flex justify-between items-center">
-            <Link href="/" className="font-bold text-lg tracking-tight hover:text-blue-600 transition-colors font-sans">
-              Rajendranagar Online
-            </Link>
-            <div className="text-sm text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded">Admin Portal</div>
-          </div>
-        </nav>
-        <main>{Component}</main>
-        <footer className="mt-12 py-6 text-center text-xs text-gray-400 border-t">
-          &copy; {new Date().getFullYear()} Rajendra Nagar Realty
-        </footer>
+        <Suspense fallback={<div className="p-10 text-center">Loading Admin...</div>}>
+          <nav className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50">
+            <div className="max-w-5xl mx-auto flex justify-between items-center">
+              <Link href="/" className="font-bold text-lg tracking-tight hover:text-blue-600 transition-colors font-sans">
+                Rajendranagar Online
+              </Link>
+              <div className="text-sm text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded">Admin Portal</div>
+            </div>
+          </nav>
+          <main>{Component}</main>
+          <footer className="mt-12 py-6 text-center text-xs text-gray-400 border-t">
+            &copy; {new Date().getFullYear()} Rajendra Nagar Realty
+          </footer>
+        </Suspense>
       </div>
     );
   }
@@ -89,7 +97,9 @@ const App: React.FC = () => {
       </nav>
 
       <main className="flex-grow">
-        {Component}
+        <Suspense fallback={<div className="py-20 text-center text-gray-400">Loading...</div>}>
+          {Component}
+        </Suspense>
       </main>
       
       <footer className="bg-slate-900 text-slate-300 py-16 text-sm border-t border-slate-800 mt-auto">
@@ -106,7 +116,7 @@ const App: React.FC = () => {
             </p>
           </div>
 
-          {/* Column 2: Service Areas (New) */}
+          {/* Column 2: Service Areas */}
           <div>
             <h4 className="text-white font-semibold mb-4 text-base">Our Service Areas</h4>
             <ul className="grid grid-cols-1 gap-1.5 text-slate-400">
@@ -125,6 +135,7 @@ const App: React.FC = () => {
             <h4 className="text-white font-semibold mb-4 text-base">Quick Links</h4>
             <ul className="space-y-3">
               <li><Link href="/" className="hover:text-white transition-colors">Home Properties</Link></li>
+              <li><Link href="/rajendra-nagar-info" className="hover:text-white transition-colors">About Rajendra Nagar</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link></li>
