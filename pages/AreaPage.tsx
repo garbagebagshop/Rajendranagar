@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Property } from '../types';
 import { fetchPropertiesByArea } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
+import { PropertyCardSkeleton } from '../components/Skeleton';
 import { IconArrowLeft, IconCheck } from '../components/Icons';
 import { Link } from '../components/Link';
 import { SEO } from '../components/SEO';
@@ -50,7 +51,9 @@ const AreaPage: React.FC<Props> = ({ areaName }) => {
       </div>
 
       {loading ? (
-        <div className="py-20 text-center text-gray-400">Loading properties in {areaName}...</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {[1, 2, 3].map(i => <PropertyCardSkeleton key={i} />)}
+        </div>
       ) : properties.length === 0 ? (
         <div className="py-20 text-center bg-gray-50 rounded-lg border border-gray-100 mb-12">
           <p className="text-gray-500 text-lg mb-2">No properties found in {areaName} at the moment.</p>

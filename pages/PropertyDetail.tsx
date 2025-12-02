@@ -5,6 +5,7 @@ import { PriceFormatter } from '../components/PriceFormatter';
 import { StarRating } from '../components/StarRating';
 import { Link } from '../components/Link';
 import { SEO } from '../components/SEO';
+import { DetailSkeleton } from '../components/Skeleton';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import { 
@@ -37,7 +38,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
       .finally(() => setLoading(false));
   }, [propertyId]);
 
-  if (loading) return <div className="p-12 text-center text-gray-500">Loading Details...</div>;
+  if (loading) return <DetailSkeleton />;
   if (!property) return <div className="p-12 text-center text-red-500">Property not found.</div>;
 
   // Determine Contact Details
@@ -158,11 +159,12 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
       </div>
 
       {/* Gallery - Swiper Carousel */}
-      <div className="mb-8 h-72 md:h-[500px] rounded-xl overflow-hidden shadow-sm bg-gray-100">
+      <div className="mb-8 h-72 md:h-[500px] rounded-xl overflow-hidden shadow-sm bg-gray-100 relative">
         {images.length <= 1 ? (
           <img 
             src={images[0] || 'https://via.placeholder.com/800x600?text=No+Image'} 
             alt="Main view" 
+            loading="eager"
             className="w-full h-full object-cover"
           />
         ) : (
@@ -176,7 +178,12 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
           >
             {images.map((src, i) => (
               <SwiperSlide key={i}>
-                <img src={src} className="w-full h-full object-cover" alt={`Slide ${i}`} />
+                <img 
+                  src={src} 
+                  className="w-full h-full object-cover" 
+                  alt={`Slide ${i}`} 
+                  loading={i === 0 ? "eager" : "lazy"} 
+                />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -287,6 +294,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
               <a 
                 href={`tel:+91${contactPhone}`}
                 className="flex items-center justify-center gap-2 w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-colors"
+                aria-label="Call Now"
               >
                 <IconPhone />
                 <span>Call Now</span>
@@ -296,6 +304,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white py-3 rounded-lg font-bold hover:bg-[#20bd5a] transition-colors"
+                aria-label="Chat on WhatsApp"
               >
                 <IconWhatsApp className="w-5 h-5" />
                 <span>WhatsApp</span>
@@ -312,6 +321,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full bg-green-50 text-green-700 border border-green-200 py-2.5 rounded-lg font-semibold hover:bg-green-100 transition-colors text-sm"
+                aria-label="Share on WhatsApp"
               >
                 <IconWhatsApp className="w-4 h-4" />
                 <span>Share on WhatsApp</span>
@@ -321,6 +331,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
                 <button 
                   onClick={handleShare}
                   className="flex items-center justify-center gap-2 bg-gray-50 text-slate-700 border border-gray-200 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm"
+                  aria-label="Share options"
                 >
                   <IconShare className="w-4 h-4" />
                   <span>Share</span>
@@ -332,6 +343,7 @@ const PropertyDetail: React.FC<Props> = ({ propertyId }) => {
                       ? "bg-blue-50 text-blue-700 border-blue-200" 
                       : "bg-gray-50 text-slate-700 border-gray-200 hover:bg-gray-100"
                   }`}
+                  aria-label="Copy link to clipboard"
                 >
                   {copied ? <IconCheck className="w-4 h-4" /> : <IconCopy className="w-4 h-4" />}
                   <span>{copied ? "Copied!" : "Copy Link"}</span>

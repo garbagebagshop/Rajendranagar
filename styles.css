@@ -1,0 +1,50 @@
+/* Critical CSS for Layout Stability */
+
+/* Enforce aspect ratio immediately to prevent CLS before Tailwind loads */
+.aspect-4-3 {
+  aspect-ratio: 4/3;
+  width: 100%;
+}
+
+/* Screen reader only utility (fallback) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Skeleton Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Swiper Fixes */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.swiper-pagination-bullet-active {
+  background: #fff !important;
+}

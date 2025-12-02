@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Area, Property, PropertyType } from '../types';
 import { fetchProperties } from '../services/api';
 import { PropertyCard } from '../components/PropertyCard';
+import { PropertyCardSkeleton } from '../components/Skeleton';
 import { IconCheck, IconShieldCheck, IconTrophy, IconBriefcase, IconSearch, IconFilter, IconX } from '../components/Icons';
 import { StarRating } from '../components/StarRating';
 import { Link, navigate } from '../components/Link';
@@ -128,7 +129,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Search & Filter Section - Moved Here for Best Fit & Removed Sticky */}
+      {/* Search & Filter Section */}
       <section className="px-4 -mt-12 relative z-10 mb-8" id="search">
         <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4 text-slate-800 font-bold border-b border-gray-100 pb-2">
@@ -139,8 +140,10 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
             {/* Search Bar */}
             <div className="md:col-span-4 relative">
+              <label htmlFor="search-input" className="sr-only">Search properties</label>
               <IconSearch className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <input 
+                id="search-input"
                 type="text" 
                 placeholder="Search by title, keywords..." 
                 className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
@@ -151,7 +154,9 @@ const Home: React.FC = () => {
 
             {/* Area Select */}
             <div className="md:col-span-2">
+              <label htmlFor="area-select" className="sr-only">Select Area</label>
               <select 
+                id="area-select"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
                 value={selectedArea}
                 onChange={(e) => setSelectedArea(e.target.value)}
@@ -165,7 +170,9 @@ const Home: React.FC = () => {
 
             {/* Type Select */}
             <div className="md:col-span-2">
+              <label htmlFor="type-select" className="sr-only">Property Type</label>
               <select 
+                id="type-select"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
@@ -179,7 +186,9 @@ const Home: React.FC = () => {
 
             {/* Price Range */}
             <div className="md:col-span-2">
+              <label htmlFor="min-price" className="sr-only">Minimum Price</label>
               <input 
+                id="min-price"
                 type="number" 
                 placeholder="Min Price" 
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
@@ -188,7 +197,9 @@ const Home: React.FC = () => {
               />
             </div>
             <div className="md:col-span-2 flex gap-2">
+              <label htmlFor="max-price" className="sr-only">Maximum Price</label>
                <input 
+                id="max-price"
                 type="number" 
                 placeholder="Max Price" 
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
@@ -200,6 +211,7 @@ const Home: React.FC = () => {
                   onClick={clearFilters}
                   className="p-2.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex-shrink-0"
                   title="Clear Filters"
+                  aria-label="Clear all filters"
                 >
                   <IconX className="w-5 h-5" />
                 </button>
@@ -219,8 +231,6 @@ const Home: React.FC = () => {
       <section className="bg-white border-b border-gray-100 py-10">
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
-            
-            {/* Trust 1: Zero Brokerage */}
             <div className="flex flex-col items-center md:items-start p-4 rounded-lg hover:bg-slate-50 transition-colors">
               <div className="bg-blue-50 p-3 rounded-full text-blue-600 mb-4">
                 <IconCheck className="w-8 h-8" />
@@ -230,8 +240,6 @@ const Home: React.FC = () => {
                 We charge a simple listing fee to connect sellers and buyers directly. You save lakhs in commissions by dealing directly.
               </p>
             </div>
-
-            {/* Trust 2: Curation */}
             <div className="flex flex-col items-center md:items-start p-4 rounded-lg hover:bg-slate-50 transition-colors">
               <div className="bg-green-50 p-3 rounded-full text-green-600 mb-4">
                 <IconShieldCheck className="w-8 h-8" />
@@ -241,8 +249,6 @@ const Home: React.FC = () => {
                 No public posting allowed. Every property is personally verified by us to ensure clean titles and zero spam.
               </p>
             </div>
-
-            {/* Trust 3: Clientele */}
             <div className="flex flex-col items-center md:items-start p-4 rounded-lg hover:bg-slate-50 transition-colors">
               <div className="bg-purple-50 p-3 rounded-full text-purple-600 mb-4">
                 <IconBriefcase className="w-8 h-8" />
@@ -252,12 +258,11 @@ const Home: React.FC = () => {
                 Our trusted clientele includes employees from Google, Microsoft, Government staff, Professors, Lawyers, and NRIs.
               </p>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* Latest Properties - Moved above Explore Localities */}
+      {/* Latest Properties */}
       <section className="bg-gray-50 border-t border-gray-200 py-16" id="properties">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex justify-between items-end mb-8">
@@ -265,7 +270,9 @@ const Home: React.FC = () => {
           </div>
           
           {loading ? (
-            <div className="text-center py-12 text-gray-400">Loading properties...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+               {[1, 2, 3, 4, 5, 6].map(i => <PropertyCardSkeleton key={i} />)}
+            </div>
           ) : filteredProperties.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
               <IconFilter className="w-12 h-12 text-gray-200 mx-auto mb-4" />
@@ -274,8 +281,8 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProperties.map(property => (
-                <PropertyCard key={property.id} property={property} />
+              {filteredProperties.map((property, index) => (
+                <PropertyCard key={property.id} property={property} priority={index < 3} />
               ))}
             </div>
           )}
@@ -300,8 +307,8 @@ const Home: React.FC = () => {
           ))}
         </div>
       </section>
-
-      {/* Buyer Motivation Content */}
+      
+      {/* Buyer & Seller Content Sections (Same as before) */}
       <section className="bg-white py-16 border-t border-gray-100">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-10">
@@ -326,7 +333,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Seller Motivation Content */}
       <section className="bg-slate-900 text-slate-300 py-16">
         <div className="max-w-4xl mx-auto px-4">
            <div className="text-center mb-10">
@@ -356,8 +362,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Client Success Stories */}
-      <section className="bg-white py-16 border-t border-gray-200">
+      {/* Client Success & FAQ (Same as before) */}
+       <section className="bg-white py-16 border-t border-gray-200">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Client Success Stories</h2>
