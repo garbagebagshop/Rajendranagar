@@ -29,7 +29,9 @@ const App: React.FC = () => {
     const areaName = decodeURIComponent(path.replace('/area/', ''));
     Component = <AreaPage areaName={areaName} />;
   } else if (path.startsWith('/p/')) {
-    const id = path.replace('/p/', '');
+    // Remove trailing slash if present to get clean ID
+    const rawId = path.replace('/p/', '');
+    const id = rawId.endsWith('/') ? rawId.slice(0, -1) : rawId;
     Component = <PropertyDetail propertyId={id} />;
   } else if (path === '/privacy') {
     Component = <PrivacyPolicy />;
