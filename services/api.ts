@@ -1,88 +1,176 @@
 import { PropertyData, Property, Area, PropertyType, SizeUnit, ContactType } from '../types';
+import { createClient } from "@libsql/client";
 
-// New Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCTerlbp2GptHB7lhxXm7x2JLFaXkjrTXqMfskrA3Em_TqpBhyWhjE_n34EaaEJHRrkQ/exec";
+// --- Configuration ---
 
-console.log(`API Service initialized. Backend: Google Sheets.`);
+// Turso Credentials
+// Note: In a production React app built with Vite/Webpack, we would use import.meta.env or process.env.
+// Since this is a direct ES module browser setup, we use hardcoded values or injected globals.
+const TURSO_URL = "libsql://rajendranagar-properties-vercel-icfg-fctpkxnw9kfbyxywrghysj9s.aws-ap-south-1.turso.io";
+const TURSO_AUTH_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjQ2NTM3NzYsImlkIjoiOGNkYTZlYzYtZmMyZS00MzlhLThhOTMtZGEzYWVmM2FiNzE4IiwicmlkIjoiMzdkY2U2MDktMDc4Zi00NjQzLTllZDUtZjUwYjYxYWRkNzY1In0.ylfxxJmZYVxHjx-3S1ZtKIR_ajhlOSBOJR7V6dgb5zzp0cKpiKA1tIkHLvw60F6JoY-W-pxYqLodYdVvIFWTDg";
 
-// Adapter: Transform Google Sheets (Flat) Response -> App (Structured) Property
-const transformToProperty = (data: any): Property => {
-  // 1. Handle Images (img1..img4 columns -> media.images array)
+// Initialize LibSQL Client
+const client = createClient({
+  url: TURSO_URL,
+  authToken: TURSO_AUTH_TOKEN,
+});
+
+console.log(`API Service initialized. Backend: Turso (SQLite).`);
+
+// --- Type Definitions ---
+
+// Helper to map SQL row to Application Property Object
+const rowToProperty = (row: any): Property => {
+  // 1. Handle Images
   const images: string[] = [];
-  if (data.img1) images.push(data.img1);
-  if (data.img2) images.push(data.img2);
-  if (data.img3) images.push(data.img3);
-  if (data.img4) images.push(data.img4);
-  // Fallback if 'images' is already an array inside data (from JSON parse)
-  if (Array.isArray(data.images)) images.push(...data.images);
+  if (row.img1) images.push(row.img1 as string);
+  if (row.img2) images.push(row.img2 as string);
+  if (row.img3) images.push(row.img3 as string);
+  if (row.img4) images.push(row.img4 as string);
 
   // 2. Handle Amenities (JSON string -> Array)
   let amenities: string[] = [];
-  if (Array.isArray(data.amenities)) {
-    amenities = data.amenities;
-  } else if (typeof data.amenities === 'string') {
+  if (typeof row.amenities === 'string') {
     try {
-      amenities = JSON.parse(data.amenities);
+      amenities = JSON.parse(row.amenities);
     } catch (e) {
       amenities = [];
     }
   }
 
-  // 3. Handle Contact (Flattened fields -> Object)
-  // Check if custom contact details exist
-  const hasCustomContact = !!(data.contact_name || (data.contact && data.contact.name));
-  
-  const contact = {
-    type: hasCustomContact ? ContactType.Custom : ContactType.Default,
-    name: data.contact_name || (data.contact ? data.contact.name : ''),
-    phone: data.contact_phone || (data.contact ? data.contact.phone : ''),
-    whatsapp: data.contact_whatsapp || (data.contact ? data.contact.whatsapp : '')
-  };
+  // 3. Handle Contact
+  const hasCustomContact = !!(row.contact_name);
 
   return {
-    id: data.id ? String(data.id) : '',
-    title: data.title || '',
-    area: (data.area as Area) || Area.Kismatpur,
-    propertyType: (data.type as PropertyType) || (data.propertyType as PropertyType) || PropertyType.Apartment,
+    id: String(row.id),
+    title: row.title as string,
+    area: (row.area as Area) || Area.Kismatpur,
+    propertyType: (row.type as PropertyType) || PropertyType.Apartment,
     size: {
-      value: Number(data.size_value || (data.size ? data.size.value : 0)),
-      unit: (data.size_unit || (data.size ? data.size.unit : SizeUnit.SqFt)) as SizeUnit
+      value: Number(row.size),
+      unit: (row.unit as SizeUnit) || SizeUnit.SqFt
     },
-    price: Number(data.price || 0),
-    facing: data.facing || '',
-    description: data.description || '',
+    price: Number(row.price),
+    facing: row.facing as string || '',
+    description: row.description as string || '',
     amenities: amenities,
     location: {
-      googleMapsLink: data.google_map || (data.location ? data.location.googleMapsLink : '')
+      googleMapsLink: row.google_map as string || ''
     },
     media: {
-      youtubeLink: data.youtube || (data.media ? data.media.youtubeLink : ''),
-      images: images.filter(url => url && url.trim() !== '') // Clean empty strings
+      youtubeLink: row.youtube as string || '',
+      images: images
     },
-    contact: contact,
-    created_at: data.timestamp || data.created_at || new Date().toISOString()
+    contact: {
+      type: hasCustomContact ? ContactType.Custom : ContactType.Default,
+      name: row.contact_name as string || '',
+      phone: row.contact_phone as string || '',
+      whatsapp: row.contact_whatsapp as string || ''
+    },
+    created_at: row.created_at as string || new Date().toISOString()
   };
 };
 
+// --- Database Setup ---
+
+let dbInitPromise: Promise<void> | null = null;
+
+const ensureTableExists = async () => {
+  try {
+    await client.execute(`
+      CREATE TABLE IF NOT EXISTS properties (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        area TEXT,
+        type TEXT,
+        price INTEGER,
+        size INTEGER,
+        unit TEXT,
+        facing TEXT,
+        description TEXT,
+        amenities TEXT,
+        google_map TEXT,
+        youtube TEXT,
+        img1 TEXT,
+        img2 TEXT,
+        img3 TEXT,
+        img4 TEXT,
+        contact_name TEXT,
+        contact_phone TEXT,
+        contact_whatsapp TEXT,
+        featured INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log("Database schema verified.");
+  } catch (e) {
+    console.error("Error creating table:", e);
+    throw e; // Re-throw to ensure we know initialization failed
+  }
+};
+
+const ensureInitialized = () => {
+  if (!dbInitPromise) {
+    dbInitPromise = ensureTableExists();
+  }
+  return dbInitPromise;
+};
+
+// --- API Functions ---
+
+// Cache keys
+const CACHE_KEY_PROPERTIES = 'rn_properties_cache';
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
+
 export const fetchProperties = async (): Promise<Property[]> => {
   try {
-    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getProperties`);
-    if (!response.ok) throw new Error("Network response was not ok");
-    const data = await response.json();
-    // Expecting array of objects
-    return Array.isArray(data) ? data.map(transformToProperty) : [];
+    // 1. Try Cache First (for speed <100ms)
+    const cached = localStorage.getItem(CACHE_KEY_PROPERTIES);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_EXPIRY) {
+        // Return cached data immediately, then fetch fresh in background
+        fetchFreshProperties().catch(console.error); 
+        return data.map((p: any) => ({...p, created_at: p.created_at})); 
+      }
+    }
+
+    // 2. Fetch Fresh
+    return await fetchFreshProperties();
+
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error("Fetch properties error:", error);
     return [];
+  }
+};
+
+const fetchFreshProperties = async (): Promise<Property[]> => {
+  try {
+    await ensureInitialized(); // Ensure DB is ready
+    const result = await client.execute("SELECT * FROM properties ORDER BY created_at DESC");
+    const properties = result.rows.map(rowToProperty);
+    
+    // Update Cache
+    localStorage.setItem(CACHE_KEY_PROPERTIES, JSON.stringify({
+      data: properties,
+      timestamp: Date.now()
+    }));
+    
+    return properties;
+  } catch(e) {
+    console.error("SQL Fetch Error:", e);
+    throw e;
   }
 };
 
 export const fetchPropertiesByArea = async (area: string): Promise<Property[]> => {
   try {
-    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getProperties&area=${encodeURIComponent(area)}`);
-    if (!response.ok) throw new Error("Network response was not ok");
-    const data = await response.json();
-    return Array.isArray(data) ? data.map(transformToProperty) : [];
+    await ensureInitialized(); // Ensure DB is ready
+    const result = await client.execute({
+      sql: "SELECT * FROM properties WHERE area = ? ORDER BY created_at DESC",
+      args: [area]
+    });
+    return result.rows.map(rowToProperty);
   } catch (error) {
     console.error("Fetch area error:", error);
     return [];
@@ -91,11 +179,14 @@ export const fetchPropertiesByArea = async (area: string): Promise<Property[]> =
 
 export const fetchPropertyById = async (id: string): Promise<Property | null> => {
   try {
-    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getProperty&id=${id}`);
-    if (!response.ok) return null;
-    const data = await response.json();
-    if (data.error || !data.id) return null;
-    return transformToProperty(data);
+    await ensureInitialized(); // Ensure DB is ready
+    const result = await client.execute({
+      sql: "SELECT * FROM properties WHERE id = ?",
+      args: [id]
+    });
+    
+    if (result.rows.length === 0) return null;
+    return rowToProperty(result.rows[0]);
   } catch (error) {
     console.error("Fetch ID error:", error);
     return null;
@@ -104,54 +195,52 @@ export const fetchPropertyById = async (id: string): Promise<Property | null> =>
 
 export const saveProperty = async (data: PropertyData, password: string): Promise<{ success: boolean; message: string }> => {
   try {
-    // Construct the inner data object that will be stored in the 'data' column
-    const propertyData = {
+    await ensureInitialized(); // Ensure DB is ready
+
+    const id = crypto.randomUUID();
+    const amenitiesJson = JSON.stringify(data.amenities);
+    
+    const args = {
+      id: id,
       title: data.title,
       area: data.area,
-      propertyType: data.propertyType,
+      type: data.propertyType,
       price: data.price,
-      size: data.size, // { value, unit }
+      size: data.size.value,
+      unit: data.size.unit,
       facing: data.facing,
       description: data.description,
-      amenities: data.amenities, // Array
-      location: {
-         googleMapsLink: data.location.googleMapsLink
-      },
-      media: {
-        youtubeLink: data.media.youtubeLink || "",
-        images: data.media.images.filter(i => i) // Array of strings
-      },
-      contact: {
-        type: data.contact.type,
-        name: data.contact.name || "",
-        phone: data.contact.phone || "",
-        whatsapp: data.contact.whatsapp || ""
-      },
-      featured: false
+      amenities: amenitiesJson,
+      google_map: data.location.googleMapsLink,
+      youtube: data.media.youtubeLink || '',
+      img1: data.media.images[0] || '',
+      img2: data.media.images[1] || '',
+      img3: data.media.images[2] || '',
+      img4: data.media.images[3] || '',
+      contact_name: data.contact.name || '',
+      contact_phone: data.contact.phone || '',
+      contact_whatsapp: data.contact.whatsapp || '',
+      featured: 0
     };
 
-    // Construct the main payload for the Google Script
-    const payload = {
-      action: 'create',
-      password: password,
-      data: propertyData
-    };
-
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8', 
-      },
-      body: JSON.stringify(payload),
+    await client.execute({
+      sql: `INSERT INTO properties (
+        id, title, area, type, price, size, unit, facing, description, amenities, 
+        google_map, youtube, img1, img2, img3, img4, 
+        contact_name, contact_phone, contact_whatsapp, featured
+      ) VALUES (
+        :id, :title, :area, :type, :price, :size, :unit, :facing, :description, :amenities,
+        :google_map, :youtube, :img1, :img2, :img3, :img4,
+        :contact_name, :contact_phone, :contact_whatsapp, :featured
+      )`,
+      args: args
     });
 
-    const result = await response.json();
+    // Invalidate Cache
+    localStorage.removeItem(CACHE_KEY_PROPERTIES);
 
-    if (result.success || result.id) {
-      return { success: true, message: "Property saved successfully!" };
-    } else {
-      throw new Error(result.error || result.message || "Failed to save");
-    }
+    return { success: true, message: "Property saved successfully to Turso!" };
+
   } catch (error) {
     console.error("Save error:", error);
     return { success: false, message: error instanceof Error ? error.message : "Unknown error" };

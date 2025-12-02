@@ -75,6 +75,24 @@ const Home: React.FC = () => {
       "addressRegion": "Telangana",
       "addressCountry": "IN"
     },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "17.3297",
+      "longitude": "78.4124"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "09:00",
+      "closes": "18:00"
+    },
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.9",
@@ -239,9 +257,37 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Latest Properties - Moved above Explore Localities */}
+      <section className="bg-gray-50 border-t border-gray-200 py-16" id="properties">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex justify-between items-end mb-8">
+            <h2 className="text-2xl font-bold text-gray-800">Latest Verified Properties</h2>
+          </div>
+          
+          {loading ? (
+            <div className="text-center py-12 text-gray-400">Loading properties...</div>
+          ) : filteredProperties.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
+              <IconFilter className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg mb-2">No properties match your search.</p>
+              <button onClick={clearFilters} className="text-blue-600 font-medium hover:underline">Clear all filters</button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredProperties.map(property => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Areas Grid */}
-      <section className="max-w-5xl mx-auto px-4 py-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">Explore Localities</h2>
+      <section className="max-w-5xl mx-auto px-4 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Explore Localities</h2>
+          <p className="text-slate-500">Find properties in the most popular areas of Rajendra Nagar</p>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {Object.values(Area).map((area) => (
             <button
@@ -277,31 +323,6 @@ const Home: React.FC = () => {
               Third, <strong>Value for Money</strong>. While a villa in Kokapet might cost you upwards of ₹10 Crores, Kismatpur offers the same luxury, larger plot sizes, and better air quality at a fraction of that price—but not for long. Market analysts predict a 30-40% appreciation in land values over the next 24 months. Buying a property here isn't just purchasing a home; it's securing a legacy asset that will compound in value while providing a serene lifestyle today. Don't wait for the prices to peak; the best time to enter this market is now.
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* Latest Properties */}
-      <section className="bg-gray-50 border-t border-gray-200 py-16">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex justify-between items-end mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Latest Verified Properties</h2>
-          </div>
-          
-          {loading ? (
-            <div className="text-center py-12 text-gray-400">Loading properties...</div>
-          ) : filteredProperties.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
-              <IconFilter className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg mb-2">No properties match your search.</p>
-              <button onClick={clearFilters} className="text-blue-600 font-medium hover:underline">Clear all filters</button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProperties.map(property => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
