@@ -84,9 +84,6 @@ export const getAreaContent = (areaName: string) => {
 
           <h3 class="text-xl font-semibold text-slate-800 mb-2">Connectivity</h3>
           <p class="mb-4">Kattedan enjoys excellent connectivity via the <strong>Outer Ring Road (ORR)</strong> and the National Highway. It serves as a key distribution center for logistics companies. The area is also close to the <strong>Budvel Railway Station</strong> and future metro expansion plans.</p>
-
-          <h3 class="text-xl font-semibold text-slate-800 mb-2">Future Growth</h3>
-          <p class="mb-4">With the government emphasizing logistics parks and the expansion of the "Airport City" concept, property rates in Kattedan are witnessing an upward correction. It is the right time to invest in commercial land here.</p>
         `
       };
 
@@ -114,6 +111,85 @@ export const getAreaContent = (areaName: string) => {
           <h3 class="text-xl font-semibold text-slate-800 mb-2">Commercial Lands</h3>
           <p class="mb-4">Investors look to Gagan Pahad for large land parcels suitable for <strong>warehousing, logistics parks, and showrooms</strong>. The direct highway facing properties command a premium rental yield.</p>
          `
+      };
+
+    case 'Shivrampalli':
+      return {
+        title: `Properties in Shivrampalli: Historic & Strategic`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Shivrampalli: Home of the NPA</h2>
+          <p class="mb-4">Shivrampalli is globally known for hosting the <strong>Sardar Vallabhbhai Patel National Police Academy (NPA)</strong>. It is a secure, well-maintained locality situated on the National Highway 44 (Bangalore Highway).</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Connectivity</h3>
+          <p class="mb-4">The <strong>PVNR Expressway</strong> ramp at Aramghar is just minutes away, offering instant access to the city center. It is an established residential area with good schools and connectivity to the Old City and the Airport.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Real Estate</h3>
+          <p class="mb-4">The area has a mix of traditional independent houses and new apartment complexes. It is ideal for government employees and those working in the nearby industrial estates.</p>
+        `
+      };
+
+    case 'Lakshmiguda':
+      return {
+        title: `Lakshmiguda Real Estate: Emerging Residential Hub`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Lakshmiguda: Affordable & Growing</h2>
+          <p class="mb-4">Situated between Kattedan and the Inner Ring Road, Lakshmiguda is rapidly urbanizing. It offers <strong>affordable housing options</strong> for middle-income families.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Why Buy Here?</h3>
+          <p class="mb-4">With property prices soaring in central Rajendra Nagar, Lakshmiguda remains a budget-friendly alternative. It is seeing a surge in <strong>open plot ventures</strong> and small apartment buildings. The upcoming road networks are set to boost its connectivity further.</p>
+        `
+      };
+
+    case 'Satamrai':
+      return {
+        title: `Satamrai: The Gateway to Shamshabad`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Satamrai: Strategic Highway Location</h2>
+          <p class="mb-4">Satamrai is located right on the NH-44, acting as the border between Rajendra Nagar and Shamshabad. Its location is its biggest asset.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Investment Potential</h3>
+          <p class="mb-4">Being close to the <strong>Airport (RGIA)</strong> and the <strong>GMR Aerocity</strong>, Satamrai is perfect for commercial investments, hotels, and transit-oriented developments. Residential demand is also rising from airport employees.</p>
+        `
+      };
+
+    case 'Premavathipet':
+      return {
+        title: `Premavathipet: Green Living near ORR`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Premavathipet: Nature & Connectivity</h2>
+          <p class="mb-4">Located adjacent to the <strong>Rajendra Nagar Agriculture University</strong> lands, Premavathipet offers a unique green environment. It is close to the ORR Service road, providing excellent access to the Outer Ring Road.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Residential Growth</h3>
+          <p class="mb-4">The area is witnessing the development of new gated communities and layout plots. It is quiet, pollution-free, yet connected—ideal for retirement homes or peaceful family living.</p>
+        `
+      };
+
+    case 'Arsh Mahal Road':
+      return {
+        title: `Arsh Mahal Road: Core Residential Zone`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Living on Arsh Mahal Road</h2>
+          <p class="mb-4">This area forms the heart of the developed Rajendra Nagar township. It is a dense residential locality with established infrastructure.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Amenities</h3>
+          <p class="mb-4">Everything is within walking distance here—shops, clinics, banks, and schools. It is perfect for those who prefer the convenience of an established neighborhood over developing outskirts.</p>
+        `
+      };
+
+    case 'Airport Road':
+      return {
+        title: `Airport Road Properties: High Appreciation Zone`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Airport Road (Shamshabad Highway)</h2>
+          <p class="mb-4">The stretch connecting Aramghar to Shamshabad is often referred to as the Airport Road. It is a high-growth corridor with massive commercial value.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Commercial & Mixed Use</h3>
+          <p class="mb-4">Investors flock here for <strong>commercial lands</strong> suitable for showrooms, hospitals, and hotels. Residential projects near the highway are also commanding a premium due to the "Walk to Work" concept for the airport ecosystem.</p>
+        `
+      };
+
+    case 'Appalappa Guda':
+      return {
+        title: `Appalappa Guda: The Next Kismatpur`,
+        content: `
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">Appalappa Guda: Emerging Villa Zone</h2>
+          <p class="mb-4">Located near Kismatpur and the Himayat Sagar catchment, Appalappa Guda is following the trajectory of its premium neighbors. It is becoming a hotspot for <strong>farmhouses and luxury villas</strong>.</p>
+          <h3 class="text-xl font-semibold text-slate-800 mb-2">Future Prospects</h3>
+          <p class="mb-4">As land in Kismatpur saturates, development is spilling over to Appalappa Guda. Prices are still relatively lower, offering a fantastic <strong>early-mover advantage</strong> for land investors.</p>
+        `
       };
 
     default:

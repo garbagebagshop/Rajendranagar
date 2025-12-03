@@ -7,6 +7,7 @@ interface SEOProps {
   schema?: object;
   type?: 'website' | 'article' | 'product';
   image?: string;
+  keywords?: string;
 }
 
 export const SEO: React.FC<SEOProps> = ({ 
@@ -15,7 +16,8 @@ export const SEO: React.FC<SEOProps> = ({
   canonical, 
   schema, 
   type = 'website',
-  image = 'https://rajendranagar.online/og-image.png' 
+  image = 'https://rajendranagar.online/og-image.png',
+  keywords = "Rajendra Nagar, Hyderabad, Real Estate, Kismatpur, Budvel, Attapur, Buy Property, Villas, Plots, Flats, No Brokerage, Verified Listings, Telangana"
 }) => {
   
   useEffect(() => {
@@ -43,8 +45,15 @@ export const SEO: React.FC<SEOProps> = ({
       element.setAttribute('content', content);
     };
 
-    // Update Meta Description
+    // Update Meta Description & Keywords
     updateMeta('description', description);
+    updateMeta('keywords', keywords);
+
+    // Local SEO Geo Tags
+    updateMeta('geo.region', 'IN-TG');
+    updateMeta('geo.placename', 'Rajendra Nagar, Hyderabad');
+    updateMeta('geo.position', '17.3297;78.4124');
+    updateMeta('ICBM', '17.3297, 78.4124');
 
     // Update Open Graph
     updateOgMeta('og:title', title);
@@ -74,7 +83,7 @@ export const SEO: React.FC<SEOProps> = ({
       script.textContent = JSON.stringify(schema);
     }
 
-  }, [title, description, canonical, schema, type, image]);
+  }, [title, description, canonical, schema, type, image, keywords]);
 
   return null;
 };
