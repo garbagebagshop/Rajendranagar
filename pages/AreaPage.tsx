@@ -38,14 +38,14 @@ const AreaPage: React.FC<Props> = ({ areaName }) => {
 
       <Link 
         href="/"
-        className="flex items-center gap-1 text-slate-500 hover:text-slate-800 mb-6 text-sm"
+        className="flex items-center gap-1 text-slate-400 hover:text-white mb-6 text-sm"
       >
         <IconArrowLeft /> Back to Home
       </Link>
 
-      <div className="mb-8 border-b border-gray-100 pb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">{content.title}</h1>
-        <p className="text-slate-600 text-lg leading-relaxed max-w-3xl">
+      <div className="mb-8 border-b border-white/10 pb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{content.title}</h1>
+        <p className="text-slate-400 text-lg leading-relaxed max-w-3xl">
           Browse the best real estate listings in {areaName}. Verified owners, direct contact, and transparent deals.
         </p>
       </div>
@@ -55,12 +55,12 @@ const AreaPage: React.FC<Props> = ({ areaName }) => {
           {[1, 2, 3].map(i => <PropertyCardSkeleton key={i} />)}
         </div>
       ) : properties.length === 0 ? (
-        <div className="py-20 text-center bg-gray-50 rounded-lg border border-gray-100 mb-12">
-          <p className="text-gray-500 text-lg mb-2">No properties found in {areaName} at the moment.</p>
-          <p className="text-sm text-gray-400 mb-4">We are actively verifying new listings.</p>
+        <div className="py-20 text-center bg-slate-900 rounded-lg border border-slate-800 mb-12">
+          <p className="text-slate-400 text-lg mb-2">No properties found in {areaName} at the moment.</p>
+          <p className="text-sm text-slate-500 mb-4">We are actively verifying new listings.</p>
           <Link 
             href="/"
-            className="text-blue-600 hover:underline font-medium"
+            className="text-gold hover:underline font-medium"
           >
             Browse all areas
           </Link>
@@ -74,12 +74,12 @@ const AreaPage: React.FC<Props> = ({ areaName }) => {
       )}
 
       {/* Dynamic Rich SEO Content */}
-      <article className="prose prose-slate max-w-none bg-slate-50/50 p-6 md:p-8 rounded-2xl border border-slate-100">
+      <article className="prose prose-invert prose-slate max-w-none bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-800">
         <div dangerouslySetInnerHTML={{ __html: content.content }} />
         
-        <div className="mt-8 pt-8 border-t border-slate-200">
-           <h3 className="text-xl font-bold text-slate-800 mb-4">Quick Facts about {areaName}</h3>
-           <ul className="grid md:grid-cols-2 gap-3 list-none pl-0 text-slate-700">
+        <div className="mt-8 pt-8 border-t border-slate-800">
+           <h3 className="text-xl font-bold text-white mb-4">Quick Facts about {areaName}</h3>
+           <ul className="grid md:grid-cols-2 gap-3 list-none pl-0 text-slate-300">
             <li className="flex items-center gap-2">
               <IconCheck className="w-5 h-5 text-green-500 flex-shrink-0" />
               <span>Direct Connectivity to Main Roads</span>

@@ -1,10 +1,9 @@
+
 import React from 'react';
 
-// Custom event to trigger router updates
+// Custom navigation using Hash to support all environments (including sandboxes)
 export const navigate = (to: string) => {
-  window.history.pushState({}, '', to);
-  const event = new PopStateEvent('popstate');
-  window.dispatchEvent(event);
+  window.location.hash = to;
   window.scrollTo(0, 0);
 };
 
@@ -25,8 +24,11 @@ export const Link: React.FC<LinkProps> = ({ href, className, children, ...props 
     navigate(href);
   };
 
+  // Prepend hash for internal links so native browser behavior (open in new tab) works
+  const targetHref = href.startsWith('/') ? `#${href}` : href;
+
   return (
-    <a href={href} onClick={handleClick} className={className} {...props}>
+    <a href={targetHref} onClick={handleClick} className={className} {...props}>
       {children}
     </a>
   );

@@ -1,18 +1,48 @@
+
 export enum Area {
-  Kismatpur = "Kismatpur",
-  Budvel = "Budvel",
-  Attapur = "Attapur",
-  Suncity = "Suncity",
-  Bandlaguda = "Bandlaguda",
-  GaganPahad = "Gagan Pahad",
-  Shivrampalli = "Shivrampalli",
-  Lakshmiguda = "Lakshmiguda",
-  Satamrai = "Satamrai",
-  Premavathipet = "Premavathipet",
-  ArshMahalRoad = "Arsh Mahal Road",
   AirportRoad = "Airport Road",
+  AppalappaGuda = "Appalappa Guda",
+  ArshMahalRoad = "Arsh Mahal Road",
+  Attapur = "Attapur",
+  Bairagiguda = "Bairagiguda",
+  BandlagudaJagir = "Bandlaguda Jagir",
+  Budvel = "Budvel",
+  Gaganpahad = "Gaganpahad",
+  Gandamguda = "Gandamguda",
+  Gandipet = "Gandipet",
+  Gungurthy = "Gungurthy",
+  HanumanNagar = "Hanuman Nagar",
+  Himayathsagar = "Himayathsagar",
+  Hydershakot = "Hydershakot",
+  Janibegum = "Janibegum",
   Kattedan = "Kattedan",
-  AppalappaGuda = "Appalappa Guda"
+  Khanapur = "Khanapur",
+  KhayyamNagar = "Khayyam Nagar",
+  Kismatpur = "Kismatpur",
+  Kokapet = "Kokapet",
+  Lakshmiguda = "Lakshmiguda",
+  ManasaHills = "Manasa Hills",
+  Manchirevula = "Manchirevula",
+  ManikondaJagir = "Manikonda Jagir",
+  ManikondaKhalsa = "Manikonda Khalsa",
+  MaqthaKousarali = "Maqtha Kousarali",
+  Narsingi = "Narsingi",
+  Neknampur = "Neknampur",
+  Pallecheru = "Pallecheru",
+  PanjashajamalBowli = "Panjashajamal Bowli",
+  Peeramcheru = "Peeramcheru",
+  Pokkalwada = "Pokkalwada",
+  Premavathipet = "Premavathipet",
+  Puppalguda = "Puppalguda",
+  Rajendranagar = "Rajendranagar",
+  Satamrai = "Satamrai",
+  Sikanderguda = "Sikanderguda",
+  Sivarampalli = "Sivarampalli",
+  Sogbowli = "Sogbowli",
+  SunCity = "Sun City",
+  TeachersColony = "Teachers Colony",
+  Upparpally = "Upparpally",
+  Vattinagulapalle = "Vattinagulapalle"
 }
 
 export enum PropertyType {
@@ -20,6 +50,11 @@ export enum PropertyType {
   Apartment = "Apartment",
   IndependentHouse = "Independent House",
   OpenPlot = "Open Plot"
+}
+
+export enum ListingCategory {
+  Sale = "Sale",
+  Rent = "Rent"
 }
 
 export enum SizeUnit {
@@ -37,6 +72,7 @@ export interface PropertyData {
   title: string;
   area: Area;
   propertyType: PropertyType;
+  listingCategory: ListingCategory;
   size: {
     value: number;
     unit: SizeUnit;
@@ -63,6 +99,7 @@ export interface PropertyData {
 export interface Property extends PropertyData {
   id: string;
   created_at: string;
+  featured?: string;
 }
 
 export const AMENITIES_LIST = [
@@ -77,4 +114,28 @@ export const AMENITIES_LIST = [
   "Gym",
   "Park / Garden",
   "Vastu Compliant"
+];
+
+// --- Admin Types ---
+
+export interface UserLimit {
+  mobile: string;
+  max_posts: number;
+  tier_name: string;
+  updated_at?: string;
+}
+
+export interface DashboardStats {
+  totalAds: number;
+  todaysAds: number;
+  topAreas: { area: string; count: number }[];
+}
+
+export const TIER_PLANS = [
+  { name: 'Free', limit: 1 },
+  { name: 'Iron', limit: 5 },
+  { name: 'Steel', limit: 10 },
+  { name: 'Copper', limit: 15 },
+  { name: 'Silver', limit: 20 },
+  { name: 'Gold', limit: 25 },
 ];

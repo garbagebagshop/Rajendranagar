@@ -18,7 +18,7 @@ export const PriceFormatter: React.FC<Props> = ({ price }) => {
   };
 
   return (
-    <span className="text-sm font-semibold text-green-700 bg-green-50 px-2 py-1 rounded">
+    <span className="text-sm font-bold text-white bg-green-600/90 backdrop-blur-md px-3 py-1 rounded-md shadow-lg border border-green-500/50">
       {formatIndianCurrency(price)}
     </span>
   );

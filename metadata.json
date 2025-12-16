@@ -1,4 +1,5 @@
 {
-  "name": "rajendranagar.online",
-  "description": "A simple, fast real estate listing management system for Rajendra Nagar area."
+  "name": "rajendranagar",
+  "description": "A simple, fast real estate listing management system for Rajendra Nagar area.",
+  "requestFramePermissions": []
 }

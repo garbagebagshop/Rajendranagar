@@ -1,56 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <title>Rajendra Nagar Realty</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            serif: ['Playfair Display', 'serif'],
-          },
-          colors: {
-            slate: {
-              850: '#1e293b',
-              900: '#0f172a',
-              950: '#020617',
-            },
-            gold: {
-              400: '#fbbf24',
-              500: '#f59e0b',
-              600: '#d97706',
-            }
-          }
-        }
-      }
-    }
-  </script>
+    <title>Rajendranagar Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://esm.sh" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
       window.onerror = function(message, source, lineno, colno, error) {
         console.error("Global Error:", message, "at", source, ":", lineno);
       };
     </script>
     <script type="importmap">
-    {
-      "imports": {
-        "react/": "https://aistudiocdn.com/react@^19.2.0/",
-        "react": "https://aistudiocdn.com/react@^19.2.0",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
-      }
-    }
-    </script>
-    <link rel="stylesheet" href="/index.css">
-</head>
-  <body class="bg-slate-950 text-slate-200 antialiased selection:bg-gold-500 selection:text-white">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "swiper": "https://esm.sh/swiper@11?external=react,react-dom",
+    "swiper/react": "https://esm.sh/swiper@11/react?external=react,react-dom",
+    "swiper/modules": "https://esm.sh/swiper@11/modules?external=react,react-dom",
+    "@libsql/client": "https://esm.sh/@libsql/client@0.14.0/web",
+    "swiper/": "https://aistudiocdn.com/swiper@^12.0.3/"
+  }
+}
+</script>
+  </head>
+  <body class="bg-gray-50 text-slate-800 antialiased font-body scroll-smooth">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

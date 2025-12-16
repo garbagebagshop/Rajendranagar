@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Area, Property, PropertyType } from '../types';
 import { fetchProperties } from '../services/api';
@@ -18,6 +19,12 @@ const Home: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>("");
   const [minPrice, setMinPrice] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
+  
+  // Collapsible text state
+  const [showInvestMore, setShowInvestMore] = useState(false);
+  
+  // Live Search
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     fetchProperties()
@@ -36,399 +43,358 @@ const Home: React.FC = () => {
     setSelectedType("");
     setMinPrice("");
     setMaxPrice("");
+    setShowDropdown(false);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchTerm(val);
+    setShowDropdown(val.length > 0);
   };
 
   // Filter Logic
   const filteredProperties = properties.filter(property => {
-    // Search Term (Title or Description)
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       const match = property.title.toLowerCase().includes(term) || 
-                    property.description.toLowerCase().includes(term);
+                    property.description.toLowerCase().includes(term) ||
+                    property.area.toLowerCase().includes(term);
       if (!match) return false;
     }
-
-    // Area
     if (selectedArea && property.area !== selectedArea) return false;
-
-    // Property Type
     if (selectedType && property.propertyType !== selectedType) return false;
-
-    // Price Range
     const price = Number(property.price);
     if (minPrice && price < Number(minPrice)) return false;
     if (maxPrice && price > Number(maxPrice)) return false;
-
     return true;
   });
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    "name": "Rajendranagar.online",
-    "url": "https://rajendranagar.online",
-    "logo": "https://rajendranagar.online/logo.png",
-    "image": "https://rajendranagar.online/og-image.png",
-    "telephone": "+916281256601",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Rajendra Nagar",
-      "addressRegion": "Telangana",
-      "addressCountry": "IN"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "17.3297",
-      "longitude": "78.4124"
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
-      "opens": "09:00",
-      "closes": "18:00"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "128"
-    },
-    "priceRange": "₹₹"
-  };
+  
+  const sortedAreas = Object.values(Area).sort();
+  const areaMatches = sortedAreas.filter(a => a.toLowerCase().includes(searchTerm.toLowerCase()));
+  const titleMatches = properties.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase())).slice(0, 3);
 
   return (
-    <div className="pb-12 bg-white">
+    <div className="pb-12 bg-slate-950">
       <SEO 
-        title="Rajendranagar.online | Real Estate in Kismatpur, Budvel & Attapur"
-        description="Buy verified properties in Rajendra Nagar, Kismatpur, Budvel & Attapur. Zero brokerage on villas, open plots and apartments. Trusted by 500+ clients."
-        schema={schema}
+        title="Rajendranagar.online | Premium Real Estate in Kismatpur, Budvel & Attapur"
+        description="Buy verified properties in Rajendra Nagar. Zero brokerage on villas, open plots and apartments in Kismatpur, Budvel & Attapur."
       />
 
-      {/* Hero Section */}
-      <div className="bg-slate-900 text-white pt-16 pb-24 px-4">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">
-            ZERO BROKERAGE PLATFORM
+      {/* Hero Section - Immersive & High Contrast */}
+      <div className="bg-hero-pattern relative min-h-[550px] flex items-center justify-center pt-24 pb-32 px-4 border-gold-gradient-bottom">
+        <div className="max-w-4xl mx-auto text-center relative z-10 text-white">
+          <div className="inline-block bg-black/60 backdrop-blur-md border border-gold/40 text-xs font-bold px-5 py-2 rounded-full mb-8 uppercase tracking-[0.2em] text-gold shadow-[0_0_20px_rgba(212,175,55,0.4)] animate-fade-in">
+             Verified • Direct • Zero Brokerage
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">Find Your Space in Rajendranagar</h1>
-          <p className="text-slate-300 max-w-2xl mx-auto text-lg mb-6">
-            The fastest way to buy and sell properties in Kismatpur, Budvel, Attapur, and surrounding areas.
-            Explore verified open plots, luxury villas, and commercial lands.
+          <h1 className="text-4xl md:text-7xl font-display font-bold mb-8 leading-tight drop-shadow-2xl">
+            Find Your Legacy in <br/><span className="text-gold-gradient">Rajendra Nagar</span>
+          </h1>
+          <p className="text-slate-200 max-w-2xl mx-auto text-lg md:text-xl mb-10 font-light leading-relaxed drop-shadow-md">
+            The most trusted platform for buying and selling properties in Kismatpur, Budvel, and Attapur. Direct owner connections, no middleman commissions.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm font-medium text-slate-400">
-             <span className="flex items-center gap-1"><IconShieldCheck className="w-4 h-4 text-green-400" /> 100% Verified Listings</span>
-             <span className="flex items-center gap-1"><IconCheck className="w-4 h-4 text-blue-400" /> Zero Brokerage</span>
-             <span className="flex items-center gap-1"><IconTrophy className="w-4 h-4 text-yellow-400" /> ₹300 Cr+ Transaction Value</span>
+          
+          {/* Quick Trust Badges */}
+          <div className="flex flex-wrap justify-center gap-6 md:gap-10 text-sm font-bold text-white uppercase tracking-wide">
+             <span className="flex items-center gap-2"><IconCheck className="w-5 h-5 text-gold" /> 100% Verified</span>
+             <span className="flex items-center gap-2"><IconCheck className="w-5 h-5 text-gold" /> Direct Owners</span>
           </div>
         </div>
       </div>
 
-      {/* Search & Filter Section */}
-      <section className="px-4 -mt-12 relative z-10 mb-8" id="search">
-        <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl border border-gray-200 p-6">
-          <div className="flex items-center gap-2 mb-4 text-slate-800 font-bold border-b border-gray-100 pb-2">
-            <IconSearch className="w-5 h-5 text-blue-600" />
-            <h2>Find Your Property</h2>
+      {/* Floating Search Section - Premium Gold Finish */}
+      <div className="px-4 -mt-20 relative z-20 mb-12" id="search">
+        <div className="max-w-6xl mx-auto bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-gold/30 p-6 md:p-8 relative overflow-hidden">
+          {/* Top Gold Line Gradient */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gold-gradient"></div>
+
+          <div className="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+            <h2 className="font-display text-2xl font-bold text-white">Search Properties</h2>
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-gold/10 text-gold px-2 py-1 rounded border border-gold/20 animate-pulse">Live</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-            {/* Search Bar */}
-            <div className="md:col-span-4 relative">
-              <label htmlFor="search-input" className="sr-only">Search properties</label>
-              <IconSearch className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-              <input 
-                id="search-input"
-                type="text" 
-                placeholder="Search by title, keywords..." 
-                className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            {/* Search Input */}
+            <div className="md:col-span-4 relative group">
+              <label htmlFor="search" className="sr-only">Keywords</label>
+              <div className="relative">
+                <IconSearch className="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-gold transition-colors" />
+                <input 
+                  id="search"
+                  type="text" 
+                  placeholder="Search Title, Area, or Keyword..." 
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:bg-slate-900 focus:ring-1 focus:ring-gold focus:border-gold outline-none transition-all placeholder-slate-500 shadow-inner"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  onFocus={() => { if(searchTerm) setShowDropdown(true); }}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                  autoComplete="off"
+                />
+              </div>
+
+              {/* Suggestions Dropdown */}
+              {showDropdown && (searchTerm.length > 0) && (
+                 <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 rounded-xl shadow-2xl border border-gold/20 overflow-hidden z-30">
+                    {areaMatches.length > 0 && (
+                      <div className="p-2 border-b border-slate-700">
+                        <p className="text-xs font-bold text-gold px-3 py-2 uppercase tracking-wider">Areas</p>
+                        {areaMatches.map(area => (
+                          <div key={area} onClick={() => { setSelectedArea(area); setSearchTerm(""); setShowDropdown(false); }} className="px-3 py-2.5 hover:bg-slate-700 text-sm rounded-lg cursor-pointer text-white transition-colors">
+                            {area}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {titleMatches.length > 0 && (
+                      <div className="p-2">
+                        <p className="text-xs font-bold text-gold px-3 py-2 uppercase tracking-wider">Properties</p>
+                        {titleMatches.map(p => (
+                          <Link href={`/p/${p.id}`} key={p.id} className="block px-3 py-2.5 hover:bg-slate-700 text-sm rounded-lg cursor-pointer text-white truncate transition-colors">
+                            {p.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    {areaMatches.length === 0 && titleMatches.length === 0 && (
+                      <div className="p-6 text-center text-sm text-slate-400">No results found</div>
+                    )}
+                 </div>
+              )}
             </div>
 
-            {/* Area Select */}
+            {/* Filters */}
             <div className="md:col-span-2">
-              <label htmlFor="area-select" className="sr-only">Select Area</label>
               <select 
-                id="area-select"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:bg-slate-900 focus:border-gold outline-none cursor-pointer shadow-sm"
                 value={selectedArea}
                 onChange={(e) => setSelectedArea(e.target.value)}
               >
                 <option value="">All Areas</option>
-                {Object.values(Area).map(a => (
-                  <option key={a} value={a}>{a}</option>
-                ))}
+                {sortedAreas.map(a => <option key={a} value={a}>{a}</option>)}
               </select>
             </div>
 
-            {/* Type Select */}
             <div className="md:col-span-2">
-              <label htmlFor="type-select" className="sr-only">Property Type</label>
               <select 
-                id="type-select"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:bg-slate-900 focus:border-gold outline-none cursor-pointer shadow-sm"
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
               >
                 <option value="">All Types</option>
-                {Object.values(PropertyType).map(t => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
+                {Object.values(PropertyType).map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
 
-            {/* Price Range */}
-            <div className="md:col-span-2">
-              <label htmlFor="min-price" className="sr-only">Minimum Price</label>
-              <input 
-                id="min-price"
+            <div className="md:col-span-3 flex gap-2">
+               <input 
                 type="number" 
                 placeholder="Min Price" 
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:bg-slate-900 focus:border-gold outline-none shadow-sm"
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
               />
-            </div>
-            <div className="md:col-span-2 flex gap-2">
-              <label htmlFor="max-price" className="sr-only">Maximum Price</label>
                <input 
-                id="max-price"
                 type="number" 
                 placeholder="Max Price" 
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:bg-slate-900 focus:border-gold outline-none shadow-sm"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
               />
-              {(searchTerm || selectedArea || selectedType || minPrice || maxPrice) && (
-                <button 
-                  onClick={clearFilters}
-                  className="p-2.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex-shrink-0"
-                  title="Clear Filters"
-                  aria-label="Clear all filters"
-                >
-                  <IconX className="w-5 h-5" />
+            </div>
+            
+             <div className="md:col-span-1 flex items-center justify-center">
+              {(searchTerm || selectedArea || selectedType || minPrice || maxPrice) ? (
+                 <button onClick={clearFilters} className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-colors border border-transparent hover:border-red-900/50" title="Clear Filters">
+                  <IconX className="w-6 h-6" />
+                </button>
+              ) : (
+                <button className="p-3.5 btn-primary w-full md:w-auto flex justify-center items-center shadow-[0_0_15px_rgba(212,175,55,0.3)] rounded-xl">
+                  <IconSearch className="w-5 h-5" />
                 </button>
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Areas Pills (Dark Style) */}
+      <section className="mb-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <h3 className="text-white font-bold mb-6 px-1 flex items-center gap-3 text-lg">
+            <span className="w-1.5 h-6 bg-gold-gradient rounded-full"></span> Browse by Locality
+          </h3>
+          <div className="flex gap-3 overflow-x-auto pb-4 px-1 snap-x no-scrollbar mask-linear-fade">
+            {sortedAreas.map((area) => (
+              <button
+                key={area}
+                onClick={() => handleAreaClick(area)}
+                className="flex-shrink-0 snap-center px-6 py-3 text-sm bg-slate-900 border border-slate-700 rounded-full hover:border-gold hover:text-white hover:bg-slate-800 hover:shadow-[0_0_15px_rgba(212,175,55,0.15)] transition-all text-slate-300 font-medium whitespace-nowrap"
+              >
+                {area}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Properties Grid */}
+      <section className="max-w-6xl mx-auto px-4 mb-12" id="properties">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-10 pb-4 border-b border-white/10">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-gold-gradient mb-2">Latest Listings</h2>
+            <p className="text-slate-400">Handpicked properties in prime locations</p>
+          </div>
+          <Link href="#search" className="hidden md:block text-sm font-bold text-gold hover:text-white transition-colors bg-slate-900 border border-gold/30 px-6 py-2 rounded-full mt-4 md:mt-0">
+            View All Listings &rarr;
+          </Link>
+        </div>
+        
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+             {[1, 2, 3].map(i => <PropertyCardSkeleton key={i} />)}
+          </div>
+        ) : filteredProperties.length === 0 ? (
+          <div className="text-center py-24 bg-slate-900 rounded-2xl border border-slate-800">
+            <IconSearch className="w-16 h-16 text-slate-700 mx-auto mb-6" />
+            <p className="text-slate-400 text-lg">No properties match your filters.</p>
+            <button onClick={clearFilters} className="mt-4 text-gold font-bold hover:underline">Reset Filters</button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProperties.map((property, index) => (
+              <PropertyCard key={property.id} property={property} priority={index < 3} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Trust Badges - Radial Glow Background */}
+      <section className="bg-gold-radial py-12 border-gold-gradient-top border-gold-gradient-bottom relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="flex items-start gap-5 p-8 rounded-2xl bg-slate-900/40 backdrop-blur-sm border border-white/5 hover:border-gold/40 hover:bg-slate-900/60 transition-all duration-300 group">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <IconTrophy className="w-7 h-7 text-gold drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-xl text-white mb-2 group-hover:text-gold transition-colors">Zero Commission</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  We connect you directly with owners. Pay a small listing fee instead of a 2% brokerage cut. Save Lakhs.
+                </p>
+              </div>
+            </div>
+            {/* Card 2 */}
+            <div className="flex items-start gap-5 p-8 rounded-2xl bg-slate-900/40 backdrop-blur-sm border border-white/5 hover:border-gold/40 hover:bg-slate-900/60 transition-all duration-300 group">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <IconShieldCheck className="w-7 h-7 text-gold drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-xl text-white mb-2 group-hover:text-gold transition-colors">100% Verified</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  Every property is physically verified by our team. We ensure clean titles and zero spam listings.
+                </p>
+              </div>
+            </div>
+            {/* Card 3 */}
+            <div className="flex items-start gap-5 p-8 rounded-2xl bg-slate-900/40 backdrop-blur-sm border border-white/5 hover:border-gold/40 hover:bg-slate-900/60 transition-all duration-300 group">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <IconBriefcase className="w-7 h-7 text-gold drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-xl text-white mb-2 group-hover:text-gold transition-colors">Elite Network</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  Trusted by employees from Google, Microsoft, and Govt officials for safe, transparent deals.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="divider-gold"></div>
+
+      {/* Content Sections - Clean & Readable */}
+      <section className="py-16 bg-slate-900 relative overflow-hidden">
+        {/* Ambient background shape */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[100px]"></div>
+
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-display font-bold text-white text-center mb-12">Why Invest in <span className="text-gold-gradient">Rajendra Nagar?</span></h2>
           
-          {(filteredProperties.length !== properties.length) && (
-            <div className="mt-3 text-xs text-gray-500 font-medium">
-              Showing {filteredProperties.length} results
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Trust & Stats Section */}
-      <section className="bg-white border-b border-gray-100 py-10">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
-            <div className="flex flex-col items-center md:items-start p-4 rounded-lg hover:bg-slate-50 transition-colors">
-              <div className="bg-blue-50 p-3 rounded-full text-blue-600 mb-4">
-                <IconCheck className="w-8 h-8" />
+          <div className="prose prose-lg prose-invert mx-auto leading-relaxed text-slate-300">
+            <p className="text-xl font-light text-center mb-8">
+              Rajendra Nagar (Kismatpur, Budvel, Attapur) is Hyderabad's fastest-growing residential corridor. With the <strong>Budvel IT Cluster</strong> and proximity to the Financial District via ORR, property values are surging.
+            </p>
+            {showInvestMore && (
+              <div className="animate-fade-in mt-8 space-y-6 bg-slate-950/50 p-8 rounded-2xl border border-white/5">
+                <p>
+                  It offers the perfect balance: a pollution-free environment near Himayat Sagar Lake, yet only a 20-minute drive to the airport or Hitech City. Whether you are looking for high-appreciation open plots in Budvel or luxury villas in Kismatpur, this is the golden zone of Hyderabad real estate.
+                </p>
+                <p>
+                  <strong>Strategic Advantage:</strong> The area is an educational hub with top schools and universities, ensuring steady rental demand. Infrastructure projects like the widened roads and eco-parks add immense lifestyle value.
+                </p>
               </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">No Commission</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                We charge a simple listing fee to connect sellers and buyers directly. You save lakhs in commissions by dealing directly.
-              </p>
-            </div>
-            <div className="flex flex-col items-center md:items-start p-4 rounded-lg hover:bg-slate-50 transition-colors">
-              <div className="bg-green-50 p-3 rounded-full text-green-600 mb-4">
-                <IconShieldCheck className="w-8 h-8" />
-              </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">Verified & Fake-Free</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                No public posting allowed. Every property is personally verified by us to ensure clean titles and zero spam.
-              </p>
-            </div>
-            <div className="flex flex-col items-center md:items-start p-4 rounded-lg hover:bg-slate-50 transition-colors">
-              <div className="bg-purple-50 p-3 rounded-full text-purple-600 mb-4">
-                <IconBriefcase className="w-8 h-8" />
-              </div>
-              <h3 className="font-bold text-lg text-slate-900 mb-2">Trusted Professionals</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Our trusted clientele includes employees from Google, Microsoft, Government staff, Professors, Lawyers, and NRIs.
-              </p>
+            )}
+            <div className="text-center mt-8">
+               <button onClick={() => setShowInvestMore(!showInvestMore)} className="text-gold font-bold hover:text-white transition-colors border-b border-gold hover:border-white pb-1">
+                {showInvestMore ? "Read Less" : "Read More Analysis"}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Latest Properties */}
-      <section className="bg-gray-50 border-t border-gray-200 py-16" id="properties">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex justify-between items-end mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Latest Verified Properties</h2>
+      <div className="divider-gold"></div>
+
+      <section className="py-16 bg-hero-pattern text-white text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/90"></div>
+        <div className="absolute inset-0 bg-gold-gradient opacity-10 mix-blend-overlay"></div>
+        
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-display font-bold text-gold-gradient mb-6">List Your Property for Free</h2>
+          <p className="text-xl md:text-2xl text-slate-200 mb-10 max-w-2xl mx-auto font-light">
+             Post an ad in 2 minutes. Reach 1000s of buyers in Rajendra Nagar.
+          </p>
+          
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+            <Link href="/post-property" className="btn-primary w-full md:w-auto px-12 py-5 rounded-full shadow-[0_0_30px_rgba(212,175,55,0.3)] text-lg tracking-wide transform hover:scale-105 transition-transform duration-300">
+              Post for Sale
+            </Link>
+            <Link href="/post-property" className="w-full md:w-auto px-12 py-5 rounded-full border border-white text-white font-bold hover:bg-white hover:text-slate-900 transition-colors duration-300">
+              Post for Rent
+            </Link>
           </div>
           
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-               {[1, 2, 3, 4, 5, 6].map(i => <PropertyCardSkeleton key={i} />)}
-            </div>
-          ) : filteredProperties.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
-              <IconFilter className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg mb-2">No properties match your search.</p>
-              <button onClick={clearFilters} className="text-blue-600 font-medium hover:underline">Clear all filters</button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProperties.map((property, index) => (
-                <PropertyCard key={property.id} property={property} priority={index < 3} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Areas Grid */}
-      <section className="max-w-5xl mx-auto px-4 py-16">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Explore Localities</h2>
-          <p className="text-slate-500">Find properties in the most popular areas of Rajendra Nagar</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {Object.values(Area).map((area) => (
-            <button
-              key={area}
-              onClick={() => handleAreaClick(area)}
-              className="p-3 text-sm text-center bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:text-blue-600 hover:shadow-sm transition-all text-slate-700"
-            >
-              {area}
-            </button>
-          ))}
-        </div>
-      </section>
-      
-      {/* Buyer & Seller Content Sections (Same as before) */}
-      <section className="bg-white py-16 border-t border-gray-100">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Invest in Rajendra Nagar Now?</h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto rounded"></div>
-          </div>
-          <div className="prose prose-lg text-slate-600 text-justify mx-auto">
-            <p>
-              <strong>Unlocking Wealth in the New Gateway of Hyderabad.</strong><br/>
-              Hyderabad's real estate market is witnessing a historic shift, and Rajendra Nagar is at the epicenter of this transformation. For decades, the western corridor (Hitech City, Gachibowli) dominated the narrative. However, with saturation hitting those markets and prices skyrocketing beyond reach, smart investors have turned their gaze South-West. Rajendra Nagar, specifically the Kismatpur-Budvel-Attapur belt, is no longer just an alternative; it is the primary choice for luxury living and high-growth investment.
-            </p>
-            <p>
-              Why buy here? First, the <strong>Location Advantage</strong> is unbeatable. You are essentially living in a green, pollution-free zone next to the Himayat Sagar Lake, yet you are only a 15-minute drive from the Financial District via the seamless Outer Ring Road (ORR). The PVNR Expressway ensures you are never disconnected from the city center.
-            </p>
-            <p>
-              Second, the <strong>Infrastructure Boom</strong>. The proposed IT Cluster in Budvel is a game-changer. It is poised to generate thousands of jobs, creating a massive rental demand and driving property prices up. The Eco-Park at Kothwalguda and the beautification of the Musi River front are adding aesthetic value that few other localities can boast of.
-            </p>
-            <p>
-              Third, <strong>Value for Money</strong>. While a villa in Kokapet might cost you upwards of ₹10 Crores, Kismatpur offers the same luxury, larger plot sizes, and better air quality at a fraction of that price—but not for long. Market analysts predict a 30-40% appreciation in land values over the next 24 months. Buying a property here isn't just purchasing a home; it's securing a legacy asset that will compound in value while providing a serene lifestyle today. Don't wait for the prices to peak; the best time to enter this market is now.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-slate-900 text-slate-300 py-16">
-        <div className="max-w-4xl mx-auto px-4">
-           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-white mb-4">Sell Smart, Sell Direct, Sell Fast</h2>
-            <div className="w-20 h-1 bg-green-500 mx-auto rounded"></div>
-          </div>
-           <div className="prose prose-lg text-slate-400 text-justify mx-auto">
-            <p>
-              <strong>Maximize Your Property's Value: The Smart Way to Sell.</strong><br/>
-              Selling a property in India has traditionally been a stressful, opaque, and expensive process. Homeowners often find themselves trapped in a web of local brokers, paying 2% to 4% in commissions, dealing with hundreds of irrelevant calls, and unsure if they are getting the true market price. At <strong>rajendranagar.online</strong>, we have dismantled this outdated system to put the power back in your hands.
-            </p>
-            <p>
-              Why list with us? It comes down to <strong>Zero Brokerage and Maximum Reach</strong>. When you sell through a traditional channel, a significant chunk of your profit is lost to middleman commissions. On a ₹2 Crore villa, that’s ₹4 Lakhs lost! With our platform, you pay a nominal verified listing fee, and 100% of the sale value is yours. We believe your asset's appreciation belongs to you, not a broker.
-            </p>
-            <p>
-              Furthermore, we solve the <strong>Quality vs. Quantity</strong> problem. Listing on generic free portals often leads to spam calls from window shoppers and aggressive agents. Our platform is curated. We market your property specifically to a database of serious buyers—tech professionals from Google, Microsoft, and Amazon, government officials, and NRIs who are actively looking for verified assets in Rajendra Nagar.
-            </p>
-            <p>
-              We also assist in <strong>Trust Building</strong>. Our 'Verified' badge signals to buyers that your documents are in order and the location is genuine, allowing you to command a premium price and close deals faster. In a market flooded with litigation-prone lands, a verified listing is gold. Whether you are selling an open plot in Budvel or a luxury apartment in Attapur, our platform ensures your property is showcased with the professionalism it deserves, connecting you directly to the right buyer for a swift, transparent transaction.
-            </p>
-          </div>
-          <div className="mt-10 text-center">
-             <Link href="/contact" className="inline-block bg-green-600 text-white font-bold py-3 px-8 rounded-full hover:bg-green-500 transition-colors shadow-lg shadow-green-900/50">
-               List Your Property Now
+          <div className="mt-8">
+             <Link href="/manage-ads" className="text-sm font-medium text-slate-400 hover:text-white underline decoration-gold/50 hover:decoration-gold">
+               Manage my existing ads
              </Link>
           </div>
         </div>
       </section>
 
-      {/* Client Success & FAQ (Same as before) */}
-       <section className="bg-white py-16 border-t border-gray-200">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Client Success Stories</h2>
-            <div className="flex justify-center items-center gap-2">
-              <StarRating rating={4.9} size="w-5 h-5" />
-              <span className="text-slate-600 font-medium">4.9/5 from 120+ Verified Customers</span>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="font-bold text-slate-900">Rajesh K.</div>
-                <StarRating rating={5} />
-              </div>
-              <p className="text-slate-600 text-sm italic">
-                "Saved almost 3 Lakhs in brokerage! The direct connection with the seller was seamless. Highly recommend this platform for anyone looking in Kismatpur."
-              </p>
-            </div>
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="font-bold text-slate-900">Sarah M.</div>
-                <StarRating rating={5} />
-              </div>
-              <p className="text-slate-600 text-sm italic">
-                "Found a great villa in Kismatpur without any hassle. Genuine listings and very professional support from the admin team."
-              </p>
-            </div>
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="font-bold text-slate-900">Dr. Venkat</div>
-                <StarRating rating={4.5} />
-              </div>
-              <p className="text-slate-600 text-sm italic">
-                "Transparent dealing. No hidden charges. The documentation guidance was also very helpful for my plot purchase in Budvel."
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="bg-white py-12 border-t border-gray-200">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-100">
-              <h3 className="font-bold text-lg text-slate-900 mb-2">Is Rajendra Nagar good for investment?</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Yes, with the ORR proximity and IT growth in Budvel, it's a prime corridor. The connectivity to the airport and financial district makes it a hotspot.
-              </p>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-100">
-              <h3 className="font-bold text-lg text-slate-900 mb-2">What is Zero Brokerage?</h3>
-              <p className="text-slate-600 leading-relaxed">
-                We don't charge commission on the deal value. Just a listing fee for sellers to verify the property. Buyers pay nothing to browse and connect.
-              </p>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-6 border border-slate-100">
-              <h3 className="font-bold text-lg text-slate-900 mb-2">Are all listings verified?</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Yes, we do not allow public posting. Every listing goes through an admin verification process to ensure authenticity and clean titles.
-              </p>
-            </div>
-          </div>
+      {/* Reviews */}
+      <section className="py-16 bg-slate-950 border-t border-gold-gradient-top">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+           <div className="inline-flex items-center gap-3 bg-slate-900/80 border border-gold/30 px-8 py-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.1)] mb-12">
+              <StarRating rating={4.9} className="text-gold" />
+              <span className="font-bold text-white text-lg">4.9/5 from 120+ Clients</span>
+           </div>
+           
+           <div className="grid md:grid-cols-3 gap-8 text-left">
+             <div className="bg-slate-900 p-8 rounded-2xl shadow-xl border border-white/5 hover:border-gold/30 transition-all group">
+               <p className="text-slate-300 italic mb-6 leading-relaxed group-hover:text-white transition-colors">"Saved huge brokerage on my Kismatpur villa purchase. The direct owner meeting was very smooth."</p>
+               <div className="font-bold text-gold border-t border-slate-800 pt-4">- Rajesh K, Software Architect</div>
+             </div>
+             <div className="bg-slate-900 p-8 rounded-2xl shadow-xl border border-white/5 hover:border-gold/30 transition-all group">
+               <p className="text-slate-300 italic mb-6 leading-relaxed group-hover:text-white transition-colors">"Professional verification. I was worried about land titles in Budvel, but their team checked everything."</p>
+               <div className="font-bold text-gold border-t border-slate-800 pt-4">- Dr. Sarah, AIG Hospitals</div>
+             </div>
+             <div className="bg-slate-900 p-8 rounded-2xl shadow-xl border border-white/5 hover:border-gold/30 transition-all group">
+               <p className="text-slate-300 italic mb-6 leading-relaxed group-hover:text-white transition-colors">"Best platform for Rajendra Nagar. No fake listings like other big portals."</p>
+               <div className="font-bold text-gold border-t border-slate-800 pt-4">- Venkat R, NRI Investor</div>
+             </div>
+           </div>
         </div>
       </section>
 

@@ -1,12 +1,9 @@
-/* Critical CSS for Layout Stability */
-
-/* Enforce aspect ratio immediately to prevent CLS before Tailwind loads */
+/* Critical CSS */
 .aspect-4-3 {
   aspect-ratio: 4/3;
   width: 100%;
 }
 
-/* Screen reader only utility (fallback) */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -19,32 +16,188 @@
   border-width: 0;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Skeleton Animation */
+/* Animations */
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: .5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
 }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Swiper Overrides */
+.swiper-button-next, .swiper-button-prev {
+  color: #FCD34D !important; /* Gold Light */
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
-
-/* Swiper Fixes */
-.swiper-button-next,
-.swiper-button-prev {
-  color: #fff !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+.swiper-pagination-bullet {
+  background: #94A3B8 !important;
+  opacity: 0.5;
 }
-
 .swiper-pagination-bullet-active {
-  background: #fff !important;
+  background: #FCD34D !important; /* Gold */
+  opacity: 1;
 }
+
+/* Typography */
+.font-display { font-family: 'Playfair Display', serif; }
+.font-body { font-family: 'Inter', sans-serif; }
+
+/* Golden Gradient Theme Variables */
+:root {
+  --color-bg-body: #020617; /* Slate 950 */
+  --color-bg-card: #0F172A; /* Slate 900 */
+  --color-bg-input: #1E293B; /* Slate 800 */
+  
+  --color-text-main: #F8FAFC; /* Slate 50 */
+  --color-text-muted: #94A3B8; /* Slate 400 */
+  
+  --color-gold-start: #D4AF37;
+  --color-gold-end: #F59E0B;
+}
+
+body {
+  background-color: var(--color-bg-body);
+  color: var(--color-text-main);
+}
+
+/* Utilities */
+.text-gold { color: #FCD34D; }
+.text-navy { color: #F8FAFC; }
+
+/* PREMIUM GOLD FINISHES */
+
+/* 1. Text Gradient - Rich & Shimmering */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FCD34D 0%, #D4AF37 50%, #B45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0px 4px 20px rgba(251, 191, 36, 0.15);
+}
+
+/* 2. Gradient Borders */
+.border-gold-gradient-bottom {
+  border-bottom-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(90deg, transparent, #D4AF37, transparent) 1;
+}
+
+.border-gold-gradient-top {
+  border-top-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(90deg, transparent, #D4AF37, transparent) 1;
+}
+
+/* 3. Section Separator - Fading Line */
+.divider-gold {
+  height: 1px;
+  width: 100%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.6) 0%, transparent 100%);
+  opacity: 0.5;
+  margin: 1.5rem 0; /* Reduced from 3rem */
+}
+
+/* 4. Ambient Background Glow */
+.bg-gold-radial {
+  background: radial-gradient(circle at center, rgba(252, 211, 77, 0.06) 0%, transparent 70%);
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #B45309 100%);
+  color: white;
+}
+
+.border-gold {
+  border-color: #D4AF37;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #D4AF37 0%, #B45309 100%);
+  color: white;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+}
+
+.btn-primary:hover::after {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -3px rgba(180, 83, 9, 0.5);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid #D4AF37;
+  color: #FCD34D;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  background-color: rgba(212, 175, 55, 0.1);
+  color: white;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+/* Cards */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--color-bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+/* Hero Background */
+.bg-hero-pattern {
+  background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.7)), url('https://images.unsplash.com/photo-1600596542815-2495db98dada?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Form Elements */
+input, select, textarea {
+  background-color: var(--color-bg-input) !important;
+  color: white !important;
+  border-color: #334155 !important;
+}
+input::placeholder {
+  color: #64748B !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #D4AF37 !important;
+  box-shadow: 0 0 0 1px #D4AF37 !important;
+}
+
+/* Mobile Helpers */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
